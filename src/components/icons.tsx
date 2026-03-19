@@ -1,3 +1,4 @@
+import overviewIcon from './../assets/overview.svg'
 import ledgerIcon from './../assets/academic_ledger.svg'
 import usersIcon from './../assets/student_registry.svg'
 import capIcon from './../assets/faculty_portal.svg'
@@ -10,6 +11,7 @@ import staffIcon from './../assets/staff.svg'
 import approveIcon from './../assets/approve.svg'
 
 export {
+    overviewIcon,
 	approveIcon,
 	capIcon,
 	cardIcon,
