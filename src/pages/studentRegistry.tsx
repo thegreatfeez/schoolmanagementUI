@@ -20,6 +20,8 @@ function StudentRegistry() {
 		}))
 	)
 	const [isAdding, setIsAdding] = useState(false)
+	const [editingId, setEditingId] = useState<number | null>(null)
+	const [openMenuId, setOpenMenuId] = useState<number | null>(null)
 	const [formState, setFormState] = useState({
 		name: '',
 		email: '',
@@ -90,6 +92,62 @@ function StudentRegistry() {
 		setIsAdding(false)
 	}
 
+	const startEdit = (student: Student) => {
+		setEditingId(student.id)
+		setIsAdding(false)
+		setFormState({
+			name: student.name,
+			email: student.email,
+			level: student.level.toString(),
+			age: student.age.toString(),
+			wallet: student.wallet,
+			paymentStatus: student.paymentStatus,
+		})
+	}
+
+	const handleEditStudent = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault()
+		if (editingId === null || !formState.name.trim() || !formState.wallet.trim() || !formState.age.trim()) {
+			return
+		}
+
+		setStudents((prev) =>
+			prev.map((student) =>
+				student.id === editingId
+					? {
+							...student,
+							name: formState.name.trim(),
+							email:
+								formState.email.trim() ||
+								`${formState.name.toLowerCase().replace(/\s+/g, '.')}@excelschool.edu`,
+							level: Number(formState.level),
+							age: Number(formState.age),
+							wallet: formState.wallet.trim(),
+							paymentStatus: formState.paymentStatus === 'paid' ? 'paid' : 'unpaid',
+						}
+					: student
+			)
+		)
+
+		setEditingId(null)
+		setFormState({
+			name: '',
+			email: '',
+			level: '100',
+			age: '',
+			wallet: '',
+			paymentStatus: 'paid',
+		})
+	}
+
+	const handleDeleteStudent = (id: number) => {
+		setStudents((prev) => prev.filter((student) => student.id !== id))
+		setOpenMenuId(null)
+		if (editingId === id) {
+			setEditingId(null)
+		}
+	}
+
 	return (
 		<main className="px-5 py-7 sm:px-9 lg:px-[56px] lg:py-7">
 			<div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -114,19 +172,27 @@ function StudentRegistry() {
 				</button>
 			</div>
 
-			{isAdding && (
+			{(isAdding || editingId !== null) && (
 				<div className="mt-8 rounded-2xl border border-[#dfe3ea] bg-white p-6">
 					<div className="flex items-center justify-between">
-						<h3 className="text-[18px] font-semibold text-[#161c25]">Add New Student</h3>
+						<h3 className="text-[18px] font-semibold text-[#161c25]">
+							{editingId !== null ? 'Edit Student' : 'Add New Student'}
+						</h3>
 						<button
 							type="button"
-							onClick={() => setIsAdding(false)}
+							onClick={() => {
+								setIsAdding(false)
+								setEditingId(null)
+							}}
 							className="text-[13px] font-semibold text-[#7b8696] hover:text-[#1f2937]"
 						>
 							Close
 						</button>
 					</div>
-					<form className="mt-5 grid gap-4 md:grid-cols-2" onSubmit={handleAddStudent}>
+					<form
+						className="mt-5 grid gap-4 md:grid-cols-2"
+						onSubmit={editingId !== null ? handleEditStudent : handleAddStudent}
+					>
 						<label className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#7b8696]">
 							Full Name
 							<input
@@ -194,11 +260,14 @@ function StudentRegistry() {
 								type="submit"
 								className="rounded-lg bg-[#1f5fd7] px-6 py-3 text-[14px] font-semibold text-white transition hover:bg-[#1a52be]"
 							>
-								Save Student
+								{editingId !== null ? 'Save Changes' : 'Save Student'}
 							</button>
 							<button
 								type="button"
-								onClick={() => setIsAdding(false)}
+								onClick={() => {
+									setIsAdding(false)
+									setEditingId(null)
+								}}
 								className="rounded-lg border border-[#dde2e9] px-6 py-3 text-[14px] font-semibold text-[#5b6370] transition hover:bg-[#f1f3f6]"
 							>
 								Cancel
@@ -312,13 +381,40 @@ function StudentRegistry() {
 								/>
 								{student.paymentStatus.toUpperCase()}
 							</span>
-							<button type="button" className="grid h-10 w-10 place-items-center rounded-full hover:bg-[#f3f5f7]">
-								<svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-									<circle cx="12" cy="5" r="2" />
-									<circle cx="12" cy="12" r="2" />
-									<circle cx="12" cy="19" r="2" />
-								</svg>
-							</button>
+							<div className="relative">
+								<button
+									type="button"
+									onClick={() => setOpenMenuId((prev) => (prev === student.id ? null : student.id))}
+									className="grid h-10 w-10 place-items-center rounded-full hover:bg-[#f3f5f7]"
+								>
+									<svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+										<circle cx="12" cy="5" r="2" />
+										<circle cx="12" cy="12" r="2" />
+										<circle cx="12" cy="19" r="2" />
+									</svg>
+								</button>
+								{openMenuId === student.id && (
+									<div className="absolute right-0 top-11 z-10 w-32 rounded-lg border border-[#e2e6ed] bg-white p-2 shadow-lg">
+										<button
+											type="button"
+											onClick={() => {
+												startEdit(student)
+												setOpenMenuId(null)
+											}}
+											className="w-full rounded-md px-3 py-2 text-left text-[13px] font-semibold text-[#1f2937] hover:bg-[#f3f5f7]"
+										>
+											Edit
+										</button>
+										<button
+											type="button"
+											onClick={() => handleDeleteStudent(student.id)}
+											className="w-full rounded-md px-3 py-2 text-left text-[13px] font-semibold text-[#c3473c] hover:bg-[#fbecec]"
+										>
+											Delete
+										</button>
+									</div>
+								)}
+							</div>
 						</div>
 					))}
 				</div>

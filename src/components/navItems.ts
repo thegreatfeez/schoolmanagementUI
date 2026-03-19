@@ -1,5 +1,5 @@
 export const navItems = [
-	{ label: 'Overview', path: '/', icon: 'grid' },
+	{ label: 'Overview', path: '/overview', icon: 'grid' },
 	{ label: 'Academic Ledger', path: '/ledger', icon: 'ledger' },
 	{ label: 'Student Registry', path: '/students', icon: 'users' },
 	{ label: 'Faculty Portal', path: '/faculty', icon: 'cap' },

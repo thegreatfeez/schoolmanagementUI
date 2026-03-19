@@ -34,12 +34,14 @@ function ClaimPortal() {
 									<p className="mt-2 max-w-[560px] text-[13px] leading-8 text-[#4f5663]">
 										Initialize your wallet with institutional test tokens required for claim verification fees.
 									</p>
-									<button
-										type="button"
-										className="mt-4 rounded-md bg-[#1457d2] px-8 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_8px_rgba(20,87,210,0.28)] transition hover:bg-[#1048b3]"
+									<a
+										href="https://cloud.google.com/application/web3/faucet/ethereum/sepolia"
+										target="_blank"
+										rel="noreferrer"
+										className="mt-4 inline-flex rounded-md bg-[#1457d2] px-8 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_8px_rgba(20,87,210,0.28)] transition hover:bg-[#1048b3]"
 									>
 										Claim Tokens
-									</button>
+									</a>
 								</div>
 							</div>
 

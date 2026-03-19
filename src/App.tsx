@@ -1,9 +1,11 @@
-import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, Outlet, Navigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 import PortalNav from './components/PortalNav'
 import Overview from './pages/overview'
-import FacultyPortal from './pages/falcutyportal'
+import FacultyPortal from './pages/FalcutyPortal'
 import ClaimPortal from './pages/claimportal'
 import StudentRegistry from './pages/studentRegistry'
+import LandingPage from './pages/LandingPage'
 import AcademicLedger from './pages/academyledger'
 
 function PortalLayout() {
@@ -19,12 +21,23 @@ function PortalLayout() {
 	)
 }
 
+// Redirect to landing if wallet not connected
+function ProtectedRoute() {
+	const { isConnected } = useAccount()
+	if (!isConnected) return <Navigate to="/home" replace />
+	return <PortalLayout />
+}
+
 function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route element={<PortalLayout />}>
-					<Route index element={<Overview />} />
+				{/* Landing page — public, no sidebar */}
+				<Route index element={<LandingPage />} />
+				<Route path="home" element={<LandingPage />} />
+
+				{/* Dashboard routes — protected, requires wallet */}
+				<Route element={<ProtectedRoute />}>
 					<Route path="overview" element={<Overview />} />
 					<Route path="ledger" element={<AcademicLedger />} />
 					<Route path="faculty" element={<FacultyPortal />} />
@@ -37,3 +50,4 @@ function App() {
 }
 
 export default App
+
